@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solace Advocates — Recruiter Pipeline Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh;font-size:14px}
+
+/* ── LOGIN ── */
+#login-screen{min-height:100vh;background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f172a 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px}
+.login-brand{font-size:10px;letter-spacing:3px;color:#94a3b8;text-transform:uppercase;font-weight:600;margin-bottom:14px;text-align:center}
+.login-title{font-size:34px;font-weight:800;color:#fff;letter-spacing:-1px;margin-bottom:8px;text-align:center}
+.login-sub{color:#94a3b8;font-size:15px;margin-bottom:48px;text-align:center}
+.recruiter-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;max-width:800px;width:100%}
+.rec-card{background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);border-radius:16px;padding:20px 22px;cursor:pointer;text-align:left;transition:all .18s;backdrop-filter:blur(8px);display:flex;flex-direction:column;gap:12}
+.rec-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.4)}
+.rec-card-top{display:flex;align-items:center;gap:12}
+.rec-avatar{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0}
+.rec-name{color:#fff;font-weight:700;font-size:15px}
+.rec-count{color:#94a3b8;font-size:12px;margin-top:2px}
+.rec-badges{display:flex;gap:8px;flex-wrap:wrap}
+.rec-badge{border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700}
+.login-footer{color:#475569;font-size:12px;margin-top:44px;text-align:center}
+
+/* ── DASHBOARD ── */
+#dashboard-screen{display:none;min-height:100vh;background:#f1f5f9}
+
+/* HEADER */
+.dash-header{background:linear-gradient(135deg,#0f172a,#1e293b);padding:18px 24px 0;color:#fff;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.35)}
+.dash-header-inner{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:14px}
+.dash-back{background:rgba(255,255,255,.1);border:none;color:#fff;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;transition:background .15s;white-space:nowrap}
+.dash-back:hover{background:rgba(255,255,255,.18)}
+.dash-title-group{display:flex;align-items:center;gap:14px}
+.dash-dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0}
+.dash-brand-lbl{font-size:10px;letter-spacing:2px;color:#94a3b8;text-transform:uppercase;font-weight:600;margin-bottom:3px}
+.dash-title{font-size:20px;font-weight:800;letter-spacing:-.5px;display:flex;align-items:center;gap:8px}
+.dash-kpis{display:flex;gap:8px;flex-wrap:wrap}
+.kpi{background:rgba(255,255,255,.08);border-radius:10px;padding:7px 13px;text-align:center;min-width:72px;border:1px solid rgba(255,255,255,.07)}
+.kpi-v{font-size:18px;font-weight:800;font-family:'DM Mono',monospace}
+.kpi-l{font-size:9.5px;color:#94a3b8;margin-top:1px}
+.accent-bar{height:3px;border-radius:4px 4px 0 0;margin-top:2px}
+
+/* MAIN */
+.dash-main{padding:20px 24px}
+
+/* FILTERS */
+.filters{background:#fff;border-radius:12px;padding:13px 16px;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.filters input,.filters select{padding:7px 12px;border-radius:8px;border:1.5px solid #e2e8f0;font-size:13px;outline:none;font-family:inherit;background:#fff;color:#1e293b;transition:border-color .15s}
+.filters input{width:200px}
+.filters input:focus,.filters select:focus{border-color:var(--accent)}
+.fbtn-group{display:flex;gap:6px;flex-wrap:wrap}
+.fbtn{padding:6px 13px;border-radius:20px;border:1.5px solid #e2e8f0;background:#fff;color:#64748b;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .12s}
+.sbtn-group{display:flex;gap:6px;align-items:center;margin-left:auto}
+.sort-lbl{font-size:12px;color:#64748b}
+.sbtn{padding:6px 12px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;color:#64748b;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
+
+/* STATS */
+.stats-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.stat{background:#fff;border-radius:10px;padding:10px 16px;border-left:4px solid;min-width:105px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.stat-v{font-size:22px;font-weight:800;font-family:'DM Mono',monospace}
+.stat-l{font-size:11px;color:#64748b;font-weight:600;margin-top:2px}
+
+/* LEGEND */
+.legend{background:#fff;border-radius:10px;padding:9px 14px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.legend-title{font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#64748b}
+.leg-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.legend-hint{margin-left:auto;font-size:11px;color:#94a3b8}
+
+/* TABLE */
+.tbl-wrap{background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:820px}
+thead tr{background:#f8fafc;border-bottom:2px solid #e2e8f0}
+th{padding:10px 12px;text-align:left;font-size:10.5px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+th.tc{text-align:center}
+.crow{cursor:pointer;border-bottom:1px solid #f1f5f9;transition:background .1s}
+.crow:hover{background:#f8fafc}
+.crow.xopen{background:#f0f9ff}
+.crow td{padding:9px 12px;vertical-align:middle}
+.name-cell{display:flex;align-items:center;gap:7px}
+.expand-arrow{font-size:9px;color:#94a3b8;width:10px;flex-shrink:0}
+.cname{color:#1e293b;text-decoration:none;font-weight:700;font-size:13px;white-space:nowrap}
+.cname:hover{color:var(--accent)}
+.aicon{font-size:10px;margin-left:2px}
+.badge{padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.phase-lbl{font-size:12px;font-weight:600;color:#64748b;white-space:nowrap}
+.days-v{font-family:'DM Mono',monospace;font-weight:700;font-size:13px}
+.tts-v{font-family:'DM Mono',monospace;font-size:12px;color:#64748b}
+
+/* PIPELINE DOTS */
+.pip{display:flex;align-items:center}
+.pip-dot{width:15px;height:15px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:#fff;flex-shrink:0;cursor:default}
+.pip-dot.complete{background:#10b981}
+.pip-dot.current{background:#f59e0b;border:2px solid #d97706}
+.pip-dot.skipped{background:#94a3b8}
+.pip-dot.pending{background:#e2e8f0;color:#94a3b8}
+.pip-line{width:5px;height:2px;flex-shrink:0}
+.pip-line.done{background:#10b981}
+.pip-line.not{background:#e2e8f0}
+
+/* EXPAND ROW */
+.xrow td{padding:0 16px 14px 30px;background:#f0f9ff;border-bottom:1px solid #e2e8f0}
+.stage-cards{display:flex;gap:6px;flex-wrap:wrap;padding-top:8px}
+.stage-card{background:#fff;border:2px solid;border-radius:8px;padding:6px 10px;min-width:88px}
+.sc-lbl{font-size:9px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.sc-date{font-size:12px;font-weight:700;margin-top:2px;font-family:'DM Mono',monospace}
+.sc-delta{font-size:10px;color:#64748b}
+.xrow-footer{display:flex;justify-content:flex-end;margin-top:8px}
+.ashby-btn{display:inline-flex;align-items:center;gap:5px;background:var(--accent);color:#fff;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;transition:opacity .15s}
+.ashby-btn:hover{opacity:.85}
+
+/* EMPTY */
+.empty-row td{padding:44px;text-align:center;color:#94a3b8;font-size:14px}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ LOGIN SCREEN ═══════════════ -->
+<div id="login-screen">
+  <div class="login-brand">Solace Advocates</div>
+  <h1 class="login-title">Recruiter Pipeline Portal</h1>
+  <p class="login-sub">Select your name to view your candidates</p>
+  <div class="recruiter-grid" id="recruiter-grid"></div>
+  <p class="login-footer">Solace Advocates · Pipeline Dashboard · May 2026</p>
+</div>
+
+<!-- ═══════════════ DASHBOARD SCREEN ═══════════════ -->
+<div id="dashboard-screen">
+  <div class="dash-header">
+    <div class="dash-header-inner">
+      <div class="dash-title-group">
+        <button class="dash-back" onclick="showLogin()">← All Recruiters</button>
+        <div>
+          <div class="dash-brand-lbl">My Pipeline</div>
+          <div class="dash-title">
+            <span class="dash-dot" id="dash-dot"></span>
+            <span id="dash-name"></span>
+          </div>
+        </div>
+      </div>
+      <div class="dash-kpis" id="dash-kpis"></div>
+    </div>
+    <div class="accent-bar" id="accent-bar"></div>
+  </div>
+
+  <div class="dash-main">
+    <div class="filters">
+      <input type="text" id="search-input" placeholder="🔍  Search candidates…" oninput="applyFilters()">
+      <div class="fbtn-group" id="fbtn-group"></div>
+      <div class="sbtn-group">
+        <span class="sort-lbl">Sort:</span>
+        <button class="sbtn" id="sort-name" onclick="setSort('name')">Name</button>
+        <button class="sbtn" id="sort-days" onclick="setSort('days')">Days in Stage</button>
+        <button class="sbtn" id="sort-tts"  onclick="setSort('tts')">Time to Start</button>
+      </div>
+    </div>
+
+    <div class="stats-row" id="stats-row"></div>
+
+    <div class="legend">
+      <span class="legend-title">Pipeline:</span>
+      <div class="leg-item"><div class="leg-dot" style="background:#10b981"></div>Complete</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#f59e0b;border:2px solid #d97706"></div>Current Stage</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#94a3b8"></div>Skipped</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#e2e8f0"></div>Pending</div>
+      <span class="legend-hint" id="legend-hint"></span>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Candidate</th>
+            <th>Status</th>
+            <th>Last Phase</th>
+            <th>Pipeline Progress <span style="font-weight:400;font-size:9px;text-transform:none;letter-spacing:0;color:#94a3b8">(Offer → DocuSign → BG → G.Admin → 2SV → Register → Attend → Quiz → Modules → Activate → Comply → 1st Patient)</span></th>
+            <th class="tc">Days in Stage</th>
+            <th class="tc">Days to Start</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const ALL = [
+  {id:"08c3ded5",name:"Nichole Sanders",rec:"Patricia Turner",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:28,tts:11.83,s0:"2026-04-16",s1:"2026-04-16",s2:"2026-04-17",s3:"2026-04-17",s4:"2026-04-19",s5:"2026-04-20",s6:"2026-04-22",s7:"2026-04-26",s8:"2026-04-28",s9:"2026-04-28",s10:"2026-04-26",s11:"2026-04-28"},
+  {id:"4a081297",name:"Joyce Richardson",rec:"Patricia Turner",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:15,tts:17.04,s0:"2026-04-24",s1:"2026-04-24",s2:"2026-04-27",s3:"2026-04-27",s4:"2026-04-29",s5:"2026-04-29",s6:"2026-05-04",s7:"2026-05-05",s8:"2026-05-05",s9:"2026-05-08",s10:"2026-05-19",s11:"2026-05-11"},
+  {id:"a68e7c6b",name:"Adrienne Simon",rec:"Patricia Turner",status:"onboarding",phase:"ACTIVATED_FOR_PATIENTS",ds:1,tts:null,s0:"2026-05-11",s1:"2026-05-11",s2:"2026-05-12",s3:"2026-05-12",s4:"2026-05-19",s5:"2026-05-12",s6:"2026-05-18",s7:"2026-05-21",s8:null,s9:"2026-05-25",s10:null,s11:null},
+  {id:"3d71ad9d",name:"Katie Dupree",rec:"Patricia Turner",status:"onboarding",phase:"REGISTERED_FOR_ONBOARDING",ds:4,tts:null,s0:"2026-05-18",s1:"2026-05-20",s2:"2026-05-21",s3:"2026-05-21",s4:"2026-05-23",s5:"2026-05-22",s6:null,s7:null,s8:null,s9:null,s10:null,s11:null},
+  {id:"88a93a61",name:"Brandon Montgomery",rec:"Patricia Turner",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:19,tts:3,s0:"2026-05-04",s1:"2026-05-04",s2:"2026-05-05",s3:"2026-05-05",s4:"2026-05-06",s5:"2026-05-05",s6:"2026-05-05",s7:"2026-05-06",s8:null,s9:"2026-05-06",s10:null,s11:"2026-05-07"},
+  {id:"33be9cd3",name:"Elisa Neal",rec:"Patricia Turner",status:"onboarding",phase:"COMPLIANCE_COMPLETED",ds:1,tts:null,s0:"2026-05-18",s1:"2026-05-18",s2:"2026-05-20",s3:"2026-05-20",s4:null,s5:"2026-05-20",s6:null,s7:null,s8:null,s9:null,s10:"2026-05-25",s11:null},
+  {id:"143026af",name:"Kirsten Smith",rec:"Patricia Turner",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:39,tts:7.42,s0:"2026-04-10",s1:"2026-04-10",s2:"2026-04-11",s3:"2026-04-11",s4:"2026-04-12",s5:"2026-04-13",s6:"2026-04-17",s7:"2026-04-17",s8:null,s9:"2026-04-17",s10:"2026-04-15",s11:"2026-04-17"},
+  {id:"9f056e7c",name:"Jodie Nunes",rec:"Patricia Turner",status:"active",phase:"COMPLIANCE_COMPLETED",ds:1,tts:null,s0:"2026-05-11",s1:"2026-05-11",s2:"2026-05-12",s3:"2026-05-12",s4:"2026-05-14",s5:"2026-05-13",s6:"2026-05-20",s7:"2026-05-25",s8:"2026-05-25",s9:"2026-05-25",s10:"2026-05-25",s11:null},
+  {id:"bed07e6e",name:"Jodi Bailey",rec:"Patricia Turner",status:"onboarding",phase:"OFFER_SENT",ds:0,tts:null,s0:"2026-05-26",s1:null,s2:null,s3:null,s4:null,s5:null,s6:null,s7:null,s8:null,s9:null,s10:null,s11:null},
+  {id:"1f7c4903",name:"Nancee Bell",rec:"Patricia Turner",status:"onboarding",phase:"REGISTERED_FOR_ONBOARDING",ds:8,tts:null,s0:"2026-05-11",s1:"2026-05-12",s2:"2026-05-12",s3:"2026-05-12",s4:"2026-05-15",s5:"2026-05-18",s6:null,s7:null,s8:null,s9:null,s10:null,s11:null},
+  {id:"4fa6c701",name:"Shaleea Venney",rec:"Patricia Turner",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:14,tts:7.46,s0:"2026-05-04",s1:"2026-05-04",s2:"2026-05-04",s3:"2026-05-04",s4:"2026-05-06",s5:"2026-05-04",s6:"2026-05-05",s7:"2026-05-06",s8:"2026-05-07",s9:"2026-05-11",s10:"2026-05-09",s11:"2026-05-12"},
+  {id:"a2f5cf8d",name:"Stephanie Molsbee",rec:"Patricia Turner",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:39,tts:14.79,s0:"2026-04-02",s1:"2026-04-02",s2:"2026-04-07",s3:"2026-04-07",s4:"2026-04-08",s5:"2026-04-08",s6:"2026-04-13",s7:"2026-04-15",s8:"2026-04-16",s9:"2026-04-15",s10:"2026-04-15",s11:"2026-04-17"},
+  {id:"24feb01e",name:"Audrey Ansell",rec:"Patricia Turner",status:"active",phase:"COMPLIANCE_COMPLETED",ds:6,tts:null,s0:"2026-05-11",s1:"2026-05-11",s2:"2026-05-11",s3:"2026-05-11",s4:"2026-05-12",s5:"2026-05-11",s6:"2026-05-14",s7:"2026-05-22",s8:"2026-05-23",s9:"2026-05-25",s10:"2026-05-20",s11:null},
+  {id:"0c5446f9",name:"Jenny Estevez",rec:"Patricia Turner",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:11,tts:11.08,s0:"2026-05-04",s1:"2026-05-04",s2:"2026-05-04",s3:"2026-05-04",s4:"2026-05-06",s5:"2026-05-06",s6:"2026-05-11",s7:"2026-05-14",s8:null,s9:"2026-05-14",s10:null,s11:"2026-05-15"},
+  {id:"7afcdb5e",name:"Jeanette McCue",rec:"Patricia Turner",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:42,tts:11.83,s0:"2026-04-02",s1:"2026-04-02",s2:"2026-04-07",s3:"2026-04-07",s4:"2026-04-09",s5:"2026-04-08",s6:"2026-04-09",s7:"2026-04-10",s8:"2026-04-14",s9:"2026-04-14",s10:"2026-04-30",s11:"2026-04-14"},
+  {id:"a4ddc6db",name:"Marci Raymond-Hunter",rec:"Patricia Turner",status:"onboarding",phase:"OFFER_SENT",ds:0,tts:null,s0:"2026-05-26",s1:null,s2:null,s3:null,s4:null,s5:null,s6:null,s7:null,s8:null,s9:null,s10:null,s11:null},
+  {id:"144a7ee8",name:"Alisa Ables",rec:"Patricia Turner",status:"onboarding",phase:"COMPLIANCE_COMPLETED",ds:7,tts:null,s0:"2026-05-18",s1:"2026-05-18",s2:"2026-05-18",s3:"2026-05-18",s4:"2026-05-19",s5:"2026-05-18",s6:null,s7:null,s8:null,s9:null,s10:"2026-05-19",s11:null},
+  {id:"39f8057f",name:"Erika Matthews",rec:"Patricia Turner",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:35,tts:5.25,s0:"2026-04-16",s1:"2026-04-16",s2:"2026-04-16",s3:"2026-04-16",s4:"2026-04-17",s5:"2026-04-18",s6:"2026-04-21",s7:"2026-04-21",s8:"2026-04-24",s9:"2026-04-21",s10:"2026-04-20",s11:"2026-04-21"},
+  {id:"5e5ea7d3",name:"Jaryn Burke",rec:"Patricia Turner",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:11,tts:11.33,s0:"2026-05-04",s1:"2026-05-05",s2:"2026-05-05",s3:"2026-05-05",s4:"2026-05-06",s5:"2026-05-06",s6:"2026-05-11",s7:"2026-05-14",s8:null,s9:"2026-05-14",s10:"2026-05-13",s11:"2026-05-15"},
+  {id:"50b4219b",name:"Annette Diaz",rec:"Patricia Turner",status:"onboarding",phase:"COMPLIANCE_COMPLETED",ds:6,tts:null,s0:"2026-05-18",s1:"2026-05-18",s2:"2026-05-18",s3:"2026-05-18",s4:"2026-05-19",s5:"2026-05-18",s6:null,s7:null,s8:null,s9:null,s10:"2026-05-20",s11:null},
+  {id:"525a3fe1",name:"Shanda Green",rec:"Patricia Turner",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:26,tts:17.21,s0:"2026-04-13",s1:"2026-04-13",s2:"2026-04-13",s3:"2026-04-13",s4:"2026-04-15",s5:"2026-04-14",s6:"2026-04-16",s7:"2026-04-21",s8:"2026-04-28",s9:"2026-04-28",s10:"2026-04-17",s11:"2026-04-30"},
+  {id:"a98b890b",name:"Danielle Eaton",rec:"Patricia Turner",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:8,tts:14.38,s0:"2026-05-04",s1:"2026-05-05",s2:"2026-05-05",s3:"2026-05-05",s4:"2026-05-06",s5:"2026-05-05",s6:"2026-05-13",s7:"2026-05-13",s8:"2026-05-17",s9:"2026-05-17",s10:"2026-05-08",s11:"2026-05-18"},
+  {id:"273e0981",name:"Deborah Champagne",rec:"Patricia Turner",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:21,tts:15.04,s0:"2026-04-20",s1:"2026-04-20",s2:"2026-04-21",s3:"2026-04-21",s4:"2026-04-24",s5:"2026-04-23",s6:"2026-04-28",s7:"2026-05-02",s8:"2026-05-04",s9:"2026-05-04",s10:"2026-05-25",s11:"2026-05-05"},
+  {id:"1379f619",name:"Jaclyn Moore",rec:"Patricia Turner",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:39,tts:7.38,s0:"2026-04-10",s1:"2026-04-10",s2:"2026-04-12",s3:"2026-04-12",s4:"2026-04-15",s5:"2026-04-14",s6:"2026-04-17",s7:"2026-04-17",s8:"2026-04-18",s9:"2026-04-17",s10:"2026-04-16",s11:"2026-04-17"},
+  {id:"b7c8263f",name:"Melissa Parris",rec:"Patricia Turner",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:8,tts:14.25,s0:"2026-05-04",s1:"2026-05-04",s2:"2026-05-05",s3:"2026-05-05",s4:"2026-05-07",s5:"2026-05-06",s6:"2026-05-13",s7:"2026-05-16",s8:"2026-05-18",s9:"2026-05-18",s10:"2026-05-18",s11:"2026-05-18"},
+  {id:"dd92d5e8",name:"Kelly Eller",rec:"Patricia Turner",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:5,tts:10.33,s0:"2026-05-11",s1:"2026-05-11",s2:"2026-05-12",s3:"2026-05-12",s4:"2026-05-21",s5:"2026-05-12",s6:"2026-05-21",s7:"2026-05-21",s8:"2026-05-21",s9:"2026-05-21",s10:"2026-05-21",s11:"2026-05-21"},
+  {id:"fc67b35a",name:"Latasha Teague",rec:"Patricia Turner",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:27,tts:9.17,s0:"2026-04-20",s1:"2026-04-20",s2:"2026-04-21",s3:"2026-04-21",s4:"2026-04-22",s5:"2026-04-21",s6:"2026-04-27",s7:"2026-04-29",s8:"2026-04-29",s9:"2026-04-29",s10:"2026-05-19",s11:"2026-04-29"},
+  {id:"eef3d245",name:"Gabrielle Tuggle",rec:"Patricia Turner",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:28,tts:11.88,s0:"2026-04-16",s1:"2026-04-17",s2:"2026-04-20",s3:"2026-04-20",s4:"2026-04-23",s5:"2026-04-21",s6:"2026-04-22",s7:"2026-04-27",s8:"2026-04-27",s9:"2026-04-27",s10:"2026-05-21",s11:"2026-04-28"},
+  {id:"58984f4d",name:"Shareta Dubose",rec:"Dalida Akhmedova",status:"onboarding",phase:"REGISTERED_FOR_ONBOARDING",ds:8,tts:null,s0:"2026-05-18",s1:"2026-05-18",s2:"2026-05-18",s3:"2026-05-18",s4:"2026-05-19",s5:"2026-05-18",s6:null,s7:null,s8:null,s9:null,s10:null,s11:null},
+  {id:"30fe27a9",name:"Joanna Colgan",rec:"Dalida Akhmedova",status:"onboarding",phase:"REGISTERED_FOR_ONBOARDING",ds:5,tts:null,s0:"2026-05-18",s1:"2026-05-20",s2:"2026-05-20",s3:"2026-05-20",s4:"2026-05-23",s5:"2026-05-21",s6:null,s7:null,s8:null,s9:null,s10:null,s11:null},
+  {id:"84acc4c4",name:"Brittany Harvey",rec:"Dalida Akhmedova",status:"active",phase:"COMPLIANCE_COMPLETED",ds:8,tts:null,s0:"2026-05-11",s1:"2026-05-11",s2:"2026-05-12",s3:"2026-05-12",s4:"2026-05-14",s5:"2026-05-12",s6:"2026-05-19",s7:"2026-05-22",s8:"2026-05-22",s9:"2026-05-22",s10:"2026-05-18",s11:null},
+  {id:"30997fda",name:"Gregory Laurenzana",rec:"Dalida Akhmedova",status:"onboarding",phase:"COMPLIANCE_COMPLETED",ds:5,tts:null,s0:"2026-05-18",s1:"2026-05-18",s2:"2026-05-19",s3:"2026-05-19",s4:"2026-05-20",s5:"2026-05-19",s6:null,s7:null,s8:null,s9:null,s10:"2026-05-21",s11:null},
+  {id:"b76d76a1",name:"LeTerra Wallace",rec:"Dalida Akhmedova",status:"onboarding",phase:"REGISTERED_FOR_ONBOARDING",ds:7,tts:null,s0:"2026-05-18",s1:"2026-05-18",s2:"2026-05-18",s3:"2026-05-18",s4:"2026-05-20",s5:"2026-05-19",s6:null,s7:null,s8:null,s9:null,s10:null,s11:null},
+  {id:"00406b99",name:"Mariama Berety",rec:"Dalida Akhmedova",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:28,tts:15.38,s0:"2026-04-13",s1:"2026-04-13",s2:"2026-04-13",s3:"2026-04-13",s4:"2026-04-23",s5:"2026-04-16",s6:"2026-04-22",s7:"2026-04-23",s8:null,s9:"2026-04-28",s10:"2026-04-22",s11:"2026-04-28"},
+  {id:"169095a3",name:"Darlene Jones",rec:"Dalida Akhmedova",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:22,tts:6.96,s0:"2026-04-27",s1:"2026-04-27",s2:"2026-04-28",s3:"2026-04-28",s4:"2026-04-30",s5:"2026-04-29",s6:"2026-04-30",s7:"2026-05-03",s8:"2026-05-03",s9:"2026-05-03",s10:null,s11:"2026-05-04"},
+  {id:"75ea78c3",name:"Christina Tagliaferro-Gaitan",rec:"Dalida Akhmedova",status:"onboarding",phase:"REGISTERED_FOR_ONBOARDING",ds:5,tts:null,s0:"2026-05-18",s1:"2026-05-18",s2:"2026-05-20",s3:"2026-05-20",s4:"2026-05-23",s5:"2026-05-21",s6:null,s7:null,s8:null,s9:null,s10:null,s11:null},
+  {id:"a360faeb",name:"Allyson Ridolphi",rec:"Dalida Akhmedova",status:"onboarding",phase:"REGISTERED_FOR_ONBOARDING",ds:8,tts:null,s0:"2026-05-18",s1:"2026-05-18",s2:"2026-05-18",s3:"2026-05-18",s4:"2026-05-19",s5:"2026-05-18",s6:null,s7:null,s8:null,s9:null,s10:null,s11:null},
+  {id:"4b297c08",name:"Tracy Meta",rec:"Dalida Akhmedova",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:41,tts:9.13,s0:"2026-04-06",s1:"2026-04-06",s2:"2026-04-06",s3:"2026-04-06",s4:"2026-04-06",s5:"2026-04-08",s6:"2026-04-10",s7:"2026-04-11",s8:null,s9:"2026-04-14",s10:"2026-05-16",s11:"2026-04-15"},
+  {id:"899c5fdd",name:"Ericka Blanco De La Cruz",rec:"Dalida Akhmedova",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:34,tts:18.96,s0:"2026-04-03",s1:"2026-04-04",s2:"2026-04-06",s3:"2026-04-06",s4:"2026-04-22",s5:"2026-04-08",s6:"2026-04-10",s7:"2026-04-18",s8:null,s9:"2026-04-22",s10:"2026-05-11",s11:"2026-04-22"},
+  {id:"25019a6f",name:"Zosha Bilyeu",rec:"Dalida Akhmedova",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:40,tts:13.83,s0:"2026-04-02",s1:"2026-04-03",s2:"2026-04-06",s3:"2026-04-06",s4:"2026-04-08",s5:"2026-04-08",s6:"2026-04-09",s7:"2026-04-10",s8:"2026-05-05",s9:"2026-04-16",s10:"2026-05-09",s11:"2026-04-16"},
+  {id:"b9869d8c",name:"Juliana Adames",rec:"Dalida Akhmedova",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:35,tts:15.25,s0:"2026-04-06",s1:"2026-04-06",s2:"2026-04-08",s3:"2026-04-08",s4:"2026-04-09",s5:"2026-04-09",s6:"2026-04-13",s7:"2026-04-19",s8:"2026-04-19",s9:"2026-04-21",s10:"2026-04-16",s11:"2026-04-21"},
+  {id:"a18b7587",name:"Mary Bowen",rec:"Dalida Akhmedova",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:27,tts:6.96,s0:"2026-04-22",s1:"2026-04-23",s2:"2026-04-22",s3:"2026-04-23",s4:"2026-04-24",s5:"2026-04-23",s6:"2026-04-24",s7:"2026-04-25",s8:null,s9:"2026-04-29",s10:"2026-04-27",s11:"2026-04-29"},
+  {id:"0082d0a0",name:"Vivian Richardson",rec:"Dalida Akhmedova",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:27,tts:14.88,s0:"2026-04-14",s1:"2026-04-14",s2:"2026-04-15",s3:"2026-04-15",s4:"2026-04-16",s5:"2026-04-17",s6:"2026-04-21",s7:"2026-04-23",s8:"2026-04-28",s9:"2026-04-28",s10:"2026-05-10",s11:"2026-04-29"},
+  {id:"c5262f4e",name:"Tina Pierce",rec:"Dalida Akhmedova",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:25,tts:4.04,s0:"2026-04-27",s1:"2026-04-27",s2:"2026-04-28",s3:"2026-04-28",s4:"2026-04-30",s5:"2026-04-28",s6:"2026-04-30",s7:"2026-05-01",s8:"2026-05-01",s9:"2026-05-01",s10:"2026-04-30",s11:"2026-05-01"},
+  {id:"8e4c4226",name:"John Brown",rec:"Dalida Akhmedova",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:26,tts:23.96,s0:"2026-04-06",s1:"2026-04-06",s2:"2026-04-07",s3:"2026-04-07",s4:"2026-04-28",s5:"2026-04-26",s6:"2026-04-28",s7:"2026-04-28",s8:"2026-04-30",s9:"2026-04-30",s10:"2026-04-28",s11:"2026-04-30"},
+  {id:"6d64ea31",name:"Nikole Grosso",rec:"Dalida Akhmedova",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:35,tts:4.13,s0:"2026-04-17",s1:"2026-04-17",s2:"2026-04-17",s3:"2026-04-17",s4:"2026-04-20",s5:"2026-04-19",s6:"2026-04-21",s7:"2026-04-21",s8:"2026-04-25",s9:"2026-04-21",s10:"2026-04-21",s11:"2026-04-21"},
+  {id:"89b28a8f",name:"Jessica Lardizabal",rec:"Dalida Akhmedova",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:28,tts:12.83,s0:"2026-04-15",s1:"2026-04-15",s2:"2026-04-16",s3:"2026-04-16",s4:"2026-04-18",s5:"2026-04-17",s6:"2026-04-20",s7:"2026-04-23",s8:"2026-04-26",s9:"2026-04-26",s10:"2026-05-13",s11:"2026-04-28"},
+  {id:"add1f24e",name:"Frances McCloskey",rec:"Dalida Akhmedova",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:11,tts:4.08,s0:"2026-05-11",s1:"2026-05-11",s2:"2026-05-11",s3:"2026-05-11",s4:"2026-05-12",s5:"2026-05-11",s6:"2026-05-14",s7:"2026-05-14",s8:null,s9:"2026-05-14",s10:"2026-05-12",s11:"2026-05-15"},
+  {id:"b942e1cd",name:"Carissa Tufts",rec:"Dalida Akhmedova",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:28,tts:22.13,s0:"2026-04-06",s1:"2026-04-06",s2:"2026-04-08",s3:"2026-04-08",s4:"2026-04-09",s5:"2026-04-09",s6:"2026-04-15",s7:"2026-04-17",s8:"2026-04-24",s9:"2026-04-24",s10:"2026-05-09",s11:"2026-04-28"},
+  {id:"242c7eb4",name:"Robin Harris",rec:"Dalida Akhmedova",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:28,tts:14.92,s0:"2026-04-13",s1:"2026-04-13",s2:"2026-04-14",s3:"2026-04-14",s4:"2026-04-16",s5:"2026-04-15",s6:"2026-04-15",s7:"2026-04-22",s8:"2026-04-27",s9:"2026-04-27",s10:"2026-05-12",s11:"2026-04-28"},
+  {id:"22cc65fa",name:"Formin Asonganyi",rec:"Dalida Akhmedova",status:"active",phase:"COMPLIANCE_COMPLETED",ds:10,tts:null,s0:"2026-05-11",s1:"2026-05-13",s2:"2026-05-12",s3:"2026-05-13",s4:"2026-05-14",s5:"2026-05-13",s6:"2026-05-20",s7:"2026-05-23",s8:"2026-05-23",s9:"2026-05-23",s10:"2026-05-16",s11:null},
+  {id:"80a35ba8",name:"Erin Braswell",rec:"Dalida Akhmedova",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:36,tts:7.17,s0:"2026-04-13",s1:"2026-04-13",s2:"2026-04-13",s3:"2026-04-13",s4:"2026-04-14",s5:"2026-04-14",s6:"2026-04-16",s7:"2026-04-20",s8:"2026-04-20",s9:"2026-04-20",s10:"2026-04-17",s11:"2026-04-20"},
+  {id:"16b34d7e",name:"Rachael Simon",rec:"Emily Patton",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:36,tts:13.04,s0:"2026-04-07",s1:"2026-04-07",s2:"2026-04-08",s3:"2026-04-08",s4:"2026-04-10",s5:"2026-04-09",s6:"2026-04-16",s7:"2026-04-17",s8:"2026-04-17",s9:"2026-04-19",s10:"2026-04-13",s11:"2026-04-20"},
+  {id:"d02bee11",name:"Krina Patel",rec:"Emily Patton",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:25,tts:15,s0:"2026-04-16",s1:"2026-04-20",s2:"2026-04-20",s3:"2026-04-20",s4:"2026-04-22",s5:"2026-04-21",s6:"2026-04-22",s7:"2026-04-25",s8:"2026-04-26",s9:"2026-04-26",s10:"2026-05-17",s11:"2026-05-01"},
+  {id:"d5bb6a83",name:"Jennifer Easley",rec:"Emily Patton",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:32,tts:7.21,s0:"2026-04-17",s1:"2026-04-19",s2:"2026-04-17",s3:"2026-04-19",s4:"2026-04-20",s5:"2026-04-19",s6:"2026-04-23",s7:"2026-04-24",s8:"2026-04-24",s9:"2026-04-24",s10:"2026-04-20",s11:"2026-04-24"},
+  {id:"f2569bf0",name:"Jillian Rothgery",rec:"Emily Patton",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:34,tts:7.25,s0:"2026-04-15",s1:"2026-04-15",s2:"2026-04-15",s3:"2026-04-15",s4:"2026-04-17",s5:"2026-04-15",s6:"2026-04-17",s7:"2026-04-21",s8:"2026-04-22",s9:"2026-04-22",s10:"2026-04-16",s11:"2026-04-22"},
+  {id:"ce225ed0",name:"Jill Mills",rec:"Emily Patton",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:12,tts:10.21,s0:"2026-05-04",s1:"2026-05-04",s2:"2026-05-04",s3:"2026-05-04",s4:"2026-05-05",s5:"2026-05-05",s6:"2026-05-07",s7:"2026-05-13",s8:null,s9:"2026-05-14",s10:"2026-05-12",s11:"2026-05-14"},
+  {id:"ceb58ebd",name:"Casie Parkinson",rec:"Emily Patton",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:29,tts:10.13,s0:"2026-04-17",s1:"2026-04-20",s2:"2026-04-21",s3:"2026-04-21",s4:"2026-04-23",s5:"2026-04-21",s6:"2026-04-23",s7:"2026-04-24",s8:"2026-04-27",s9:"2026-04-27",s10:"2026-04-24",s11:"2026-04-27"},
+  {id:"3a29f2bd",name:"Daronda Floyd",rec:"Emily Patton",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:15,tts:7.25,s0:"2026-05-04",s1:"2026-05-04",s2:"2026-05-05",s3:"2026-05-05",s4:"2026-05-06",s5:"2026-05-05",s6:"2026-05-06",s7:"2026-05-07",s8:"2026-05-10",s9:"2026-05-10",s10:null,s11:"2026-05-11"},
+  {id:"993387a5",name:"Vanessa Turrentine",rec:"Emily Patton",status:"onboarding",phase:"REGISTERED_FOR_ONBOARDING",ds:4,tts:null,s0:"2026-05-18",s1:"2026-05-18",s2:"2026-05-19",s3:"2026-05-19",s4:"2026-05-23",s5:"2026-05-22",s6:null,s7:null,s8:null,s9:null,s10:null,s11:null},
+  {id:"3d5074a4",name:"Angela Royster",rec:"Emily Patton",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:47,tts:8.04,s0:"2026-04-01",s1:"2026-04-01",s2:"2026-04-03",s3:"2026-04-03",s4:"2026-04-04",s5:"2026-04-06",s6:"2026-04-07",s7:"2026-04-08",s8:"2026-04-09",s9:"2026-04-09",s10:"2026-04-09",s11:"2026-04-09"},
+  {id:"bdaada22",name:"Tamara Harman",rec:"Emily Patton",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:8,tts:14,s0:"2026-05-04",s1:"2026-05-04",s2:"2026-05-05",s3:"2026-05-05",s4:"2026-05-08",s5:"2026-05-07",s6:"2026-05-12",s7:"2026-05-15",s8:"2026-05-16",s9:"2026-05-16",s10:null,s11:"2026-05-18"},
+  {id:"0d1a13fc",name:"Celeste Cade",rec:"Emily Patton",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:29,tts:6.17,s0:"2026-04-21",s1:"2026-04-22",s2:"2026-04-22",s3:"2026-04-22",s4:"2026-04-27",s5:"2026-04-27",s6:"2026-04-27",s7:"2026-04-27",s8:null,s9:"2026-04-27",s10:null,s11:"2026-04-27"},
+  {id:"4b5083bb",name:"Kayla Walker",rec:"Emily Patton",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:34,tts:14.13,s0:"2026-04-08",s1:"2026-04-08",s2:"2026-04-08",s3:"2026-04-08",s4:"2026-04-12",s5:"2026-04-12",s6:"2026-04-15",s7:"2026-04-21",s8:null,s9:"2026-04-22",s10:"2026-05-12",s11:"2026-04-22"},
+  {id:"932887a2",name:"Kiara Ramirez",rec:"Emily Patton",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:35,tts:15.08,s0:"2026-04-06",s1:"2026-04-06",s2:"2026-04-08",s3:"2026-04-08",s4:"2026-04-11",s5:"2026-04-10",s6:"2026-04-17",s7:"2026-04-20",s8:"2026-04-20",s9:"2026-04-20",s10:"2026-04-20",s11:"2026-04-21"},
+  {id:"bf621d98",name:"Abigail Pesina",rec:"Emily Patton",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:6,tts:15.5,s0:"2026-05-04",s1:"2026-05-05",s2:"2026-05-06",s3:"2026-05-06",s4:"2026-05-07",s5:"2026-05-06",s6:"2026-05-13",s7:"2026-05-15",s8:"2026-05-15",s9:"2026-05-18",s10:"2026-05-11",s11:"2026-05-20"},
+  {id:"b19d40f7",name:"Carrie Martini",rec:"Emily Patton",status:"active",phase:"ACTIVATED_FOR_PATIENTS",ds:1,tts:null,s0:"2026-05-11",s1:"2026-05-11",s2:"2026-05-11",s3:"2026-05-11",s4:"2026-05-20",s5:"2026-05-12",s6:"2026-05-21",s7:"2026-05-24",s8:null,s9:"2026-05-25",s10:null,s11:null},
+  {id:"9a02360d",name:"Wendy Pina-Solis",rec:"Emily Patton",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:6,tts:9.13,s0:"2026-05-11",s1:"2026-05-11",s2:"2026-05-12",s3:"2026-05-12",s4:"2026-05-13",s5:"2026-05-12",s6:"2026-05-18",s7:"2026-05-20",s8:"2026-05-20",s9:"2026-05-20",s10:"2026-05-13",s11:"2026-05-20"},
+  {id:"d8549f7a",name:"Olubusayo Ajayi",rec:"Emily Patton",status:"active",phase:"ACTIVATED_FOR_PATIENTS",ds:4,tts:null,s0:"2026-05-11",s1:"2026-05-11",s2:"2026-05-11",s3:"2026-05-11",s4:"2026-05-13",s5:"2026-05-11",s6:"2026-05-19",s7:"2026-05-21",s8:null,s9:"2026-05-22",s10:null,s11:null},
+  {id:"57dc36a9",name:"Nicole Fedak",rec:"Emily Patton",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:47,tts:8.04,s0:"2026-04-01",s1:"2026-04-01",s2:"2026-04-03",s3:"2026-04-03",s4:"2026-04-05",s5:"2026-04-03",s6:"2026-04-07",s7:"2026-04-07",s8:"2026-04-08",s9:"2026-04-08",s10:"2026-04-18",s11:"2026-04-09"},
+  {id:"2b194296",name:"Michelle Miles",rec:"Emily Patton",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:12,tts:10.13,s0:"2026-05-04",s1:"2026-05-04",s2:"2026-05-04",s3:"2026-05-04",s4:"2026-05-07",s5:"2026-05-04",s6:"2026-05-13",s7:"2026-05-13",s8:"2026-05-15",s9:"2026-05-14",s10:"2026-05-12",s11:"2026-05-14"},
+  {id:"51da1e7b",name:"Monai Liburd-Crooks",rec:"Emily Patton",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:39,tts:3.04,s0:"2026-04-14",s1:"2026-04-14",s2:"2026-04-14",s3:"2026-04-14",s4:"2026-04-15",s5:"2026-04-14",s6:"2026-04-16",s7:"2026-04-16",s8:"2026-04-17",s9:"2026-04-17",s10:"2026-04-16",s11:"2026-04-17"},
+  {id:"3b135ff7",name:"Denisha Gunter",rec:"Emily Patton",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:20,tts:16.29,s0:"2026-04-20",s1:"2026-04-20",s2:"2026-04-21",s3:"2026-04-21",s4:"2026-04-22",s5:"2026-04-21",s6:"2026-05-04",s7:"2026-05-05",s8:"2026-05-05",s9:"2026-05-06",s10:"2026-05-05",s11:"2026-05-06"},
+  {id:"9899b33a",name:"Melissa Hendricks",rec:"Emily Patton",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:33,tts:3.17,s0:"2026-04-20",s1:"2026-04-20",s2:"2026-04-20",s3:"2026-04-20",s4:"2026-04-21",s5:"2026-04-20",s6:"2026-04-20",s7:"2026-04-22",s8:"2026-04-22",s9:"2026-04-22",s10:"2026-05-18",s11:"2026-04-23"},
+  {id:"2224184b",name:"Dylan Beauchamp",rec:"Emma Spears",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:13,tts:12.08,s0:"2026-05-01",s1:"2026-05-01",s2:"2026-05-01",s3:"2026-05-01",s4:"2026-05-04",s5:"2026-05-02",s6:"2026-05-06",s7:"2026-05-08",s8:"2026-05-08",s9:"2026-05-08",s10:"2026-05-08",s11:"2026-05-13"},
+  {id:"eb5877dc",name:"Chris Barnes",rec:"Emma Spears",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:21,tts:14.96,s0:"2026-04-20",s1:"2026-04-21",s2:"2026-04-20",s3:"2026-04-21",s4:"2026-05-02",s5:"2026-04-21",s6:"2026-04-23",s7:"2026-05-02",s8:null,s9:"2026-05-04",s10:null,s11:"2026-05-05"},
+  {id:"401bb966",name:"Ashley Cohrs",rec:"Emma Spears",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:8,tts:14.04,s0:"2026-05-04",s1:"2026-05-05",s2:"2026-05-05",s3:"2026-05-05",s4:"2026-05-07",s5:"2026-05-07",s6:"2026-05-14",s7:"2026-05-15",s8:null,s9:"2026-05-18",s10:"2026-05-15",s11:"2026-05-18"},
+  {id:"edd44c8b",name:"Naisha Crespo",rec:"Emma Spears",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:25,tts:11.17,s0:"2026-04-20",s1:"2026-04-20",s2:"2026-04-27",s3:"2026-04-27",s4:"2026-04-29",s5:"2026-04-27",s6:"2026-04-30",s7:"2026-05-01",s8:"2026-05-01",s9:"2026-05-01",s10:null,s11:"2026-05-01"},
+  {id:"b3333a1a",name:"Erika Metcalf",rec:"Emma Spears",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:35,tts:5.29,s0:"2026-04-16",s1:"2026-04-16",s2:"2026-04-16",s3:"2026-04-17",s4:"2026-04-17",s5:"2026-04-17",s6:"2026-04-20",s7:"2026-04-21",s8:"2026-04-21",s9:"2026-04-21",s10:"2026-04-21",s11:"2026-04-21"},
+  {id:"3fc4416f",name:"Valerie Aplin",rec:"Emma Spears",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:13,tts:15.29,s0:"2026-04-28",s1:"2026-04-28",s2:"2026-04-28",s3:"2026-04-28",s4:"2026-05-01",s5:"2026-04-30",s6:"2026-04-30",s7:"2026-05-05",s8:"2026-05-09",s9:"2026-05-12",s10:"2026-05-23",s11:"2026-05-13"},
+  {id:"5a616eb7",name:"Robin Hightower",rec:"Emma Spears",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:13,tts:7.29,s0:"2026-05-06",s1:"2026-05-06",s2:"2026-05-06",s3:"2026-05-06",s4:"2026-05-13",s5:"2026-05-06",s6:"2026-05-12",s7:"2026-05-13",s8:null,s9:"2026-05-13",s10:null,s11:"2026-05-13"},
+  {id:"7305cb59",name:"Alissa Emmett",rec:"Emma Spears",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:12,tts:10.13,s0:"2026-05-04",s1:"2026-05-04",s2:"2026-05-05",s3:"2026-05-05",s4:"2026-05-07",s5:"2026-05-06",s6:"2026-05-11",s7:"2026-05-12",s8:"2026-05-14",s9:"2026-05-14",s10:"2026-05-08",s11:"2026-05-14"},
+  {id:"bef07afb",name:"Christina Adeloye",rec:"Emma Spears",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:29,tts:7.08,s0:"2026-04-20",s1:"2026-04-21",s2:"2026-04-23",s3:"2026-04-23",s4:"2026-04-24",s5:"2026-04-23",s6:"2026-04-24",s7:"2026-04-24",s8:null,s9:"2026-04-24",s10:"2026-05-21",s11:"2026-04-27"},
+  {id:"3e618ad1",name:"Trina Cain",rec:"Emma Spears",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:4,tts:11.33,s0:"2026-05-11",s1:"2026-05-12",s2:"2026-05-12",s3:"2026-05-12",s4:"2026-05-21",s5:"2026-05-13",s6:"2026-05-20",s7:"2026-05-22",s8:"2026-05-22",s9:"2026-05-22",s10:null,s11:"2026-05-22"},
+  {id:"cde5f89a",name:"Ronica Betts",rec:"Emma Spears",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:15,tts:13.13,s0:"2026-04-28",s1:"2026-04-28",s2:"2026-04-29",s3:"2026-04-29",s4:"2026-05-01",s5:"2026-04-29",s6:"2026-04-29",s7:"2026-05-07",s8:null,s9:"2026-05-10",s10:null,s11:"2026-05-11"},
+  {id:"3b17a84d",name:"Donna Melnick",rec:"Emma Spears",status:"active",phase:"COMPLIANCE_COMPLETED",ds:9,tts:null,s0:"2026-05-11",s1:"2026-05-11",s2:"2026-05-13",s3:"2026-05-13",s4:"2026-05-14",s5:"2026-05-13",s6:"2026-05-20",s7:"2026-05-21",s8:"2026-05-21",s9:"2026-05-25",s10:"2026-05-17",s11:null},
+  {id:"09e39ad4",name:"Ann Jakuboski",rec:"Emma Spears",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:19,tts:9.17,s0:"2026-04-28",s1:"2026-04-28",s2:"2026-04-28",s3:"2026-04-28",s4:"2026-04-30",s5:"2026-04-28",s6:"2026-05-05",s7:"2026-05-06",s8:"2026-05-07",s9:"2026-05-07",s10:"2026-05-03",s11:"2026-05-07"},
+  {id:"33b0967f",name:"Jill Galombeck",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:8,tts:6.96,s0:"2026-05-11",s1:"2026-05-11",s2:"2026-05-11",s3:"2026-05-11",s4:"2026-05-12",s5:"2026-05-11",s6:"2026-05-14",s7:"2026-05-15",s8:null,s9:"2026-05-16",s10:null,s11:"2026-05-18"},
+  {id:"fdcac02f",name:"Jeffrey Conti",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:33,tts:21.83,s0:"2026-04-01",s1:"2026-04-03",s2:"2026-04-07",s3:"2026-04-07",s4:"2026-04-09",s5:"2026-04-07",s6:"2026-04-16",s7:"2026-04-22",s8:null,s9:"2026-04-22",s10:"2026-05-08",s11:"2026-04-23"},
+  {id:"7fb735b4",name:"Jeri Reebals",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:26,tts:12.96,s0:"2026-04-17",s1:"2026-04-17",s2:"2026-04-17",s3:"2026-04-17",s4:"2026-04-20",s5:"2026-04-19",s6:"2026-04-24",s7:"2026-04-29",s8:"2026-04-29",s9:"2026-04-29",s10:"2026-04-26",s11:"2026-04-30"},
+  {id:"516afa04",name:"Joanne Erich",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:34,tts:14.04,s0:"2026-04-08",s1:"2026-04-08",s2:"2026-04-09",s3:"2026-04-09",s4:"2026-04-16",s5:"2026-04-14",s6:"2026-04-16",s7:"2026-04-16",s8:"2026-04-17",s9:"2026-04-22",s10:"2026-04-15",s11:"2026-04-22"},
+  {id:"87c75de3",name:"Jaymalisa Baker",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:21,tts:8.58,s0:"2026-04-27",s1:"2026-04-27",s2:"2026-04-27",s3:"2026-04-27",s4:"2026-04-28",s5:"2026-04-27",s6:"2026-04-27",s7:"2026-04-30",s8:"2026-04-30",s9:"2026-05-03",s10:"2026-04-30",s11:"2026-05-05"},
+  {id:"3a6f0dbd",name:"Stephanie Burley",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:19,tts:10.79,s0:"2026-04-27",s1:"2026-04-28",s2:"2026-04-28",s3:"2026-04-28",s4:"2026-04-29",s5:"2026-04-28",s6:"2026-05-04",s7:"2026-05-06",s8:"2026-05-08",s9:"2026-05-07",s10:"2026-04-29",s11:"2026-05-07"},
+  {id:"0001d8ef",name:"Christelyn Palmer",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:4,tts:11.04,s0:"2026-05-11",s1:"2026-05-11",s2:"2026-05-12",s3:"2026-05-12",s4:"2026-05-13",s5:"2026-05-12",s6:"2026-05-20",s7:"2026-05-22",s8:"2026-05-25",s9:"2026-05-22",s10:"2026-05-16",s11:"2026-05-22"},
+  {id:"7c24fdcd",name:"Tywanna Robinson",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:19,tts:3.29,s0:"2026-05-04",s1:"2026-05-04",s2:"2026-05-04",s3:"2026-05-04",s4:"2026-05-05",s5:"2026-05-04",s6:"2026-05-05",s7:"2026-05-05",s8:"2026-05-05",s9:"2026-05-07",s10:null,s11:"2026-05-07"},
+  {id:"bd6b3d09",name:"Gregory Brown",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:41,tts:13.13,s0:"2026-04-02",s1:"2026-04-03",s2:"2026-04-07",s3:"2026-04-07",s4:"2026-04-08",s5:"2026-04-07",s6:"2026-04-13",s7:"2026-04-15",s8:"2026-04-15",s9:"2026-04-15",s10:"2026-04-14",s11:"2026-04-15"},
+  {id:"8848e8dd",name:"Nisa Hernandez",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:15,tts:18.88,s0:"2026-04-22",s1:"2026-04-22",s2:"2026-04-22",s3:"2026-04-22",s4:"2026-04-23",s5:"2026-04-26",s6:"2026-05-05",s7:"2026-05-06",s8:"2026-05-08",s9:"2026-05-09",s10:"2026-05-03",s11:"2026-05-11"},
+  {id:"cb444da9",name:"Logan Springer",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:4,tts:11.17,s0:"2026-05-11",s1:"2026-05-11",s2:"2026-05-11",s3:"2026-05-11",s4:"2026-05-13",s5:"2026-05-11",s6:"2026-05-14",s7:"2026-05-16",s8:"2026-05-21",s9:"2026-05-22",s10:null,s11:"2026-05-22"},
+  {id:"5ec85022",name:"Janaria Gilmore-Hallingquest",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:36,tts:11.88,s0:"2026-04-08",s1:"2026-04-09",s2:"2026-04-09",s3:"2026-04-09",s4:"2026-04-11",s5:"2026-04-11",s6:"2026-04-14",s7:"2026-04-18",s8:"2026-04-19",s9:"2026-04-18",s10:"2026-05-24",s11:"2026-04-20"},
+  {id:"f10d0899",name:"Crystal Fagan",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:14,tts:22.58,s0:"2026-04-20",s1:"2026-04-20",s2:"2026-04-21",s3:"2026-04-21",s4:"2026-04-24",s5:"2026-04-23",s6:"2026-05-06",s7:"2026-05-08",s8:null,s9:"2026-05-12",s10:"2026-05-18",s11:"2026-05-12"},
+  {id:"fe77d1c2",name:"Alejandro Dalisay",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:18,tts:30.67,s0:"2026-04-07",s1:"2026-04-07",s2:"2026-04-08",s3:"2026-04-08",s4:"2026-04-11",s5:"2026-04-10",s6:"2026-04-13",s7:"2026-04-14",s8:"2026-04-14",s9:"2026-05-07",s10:"2026-04-15",s11:"2026-05-08"},
+  {id:"a0f555f1",name:"Kay Lienhop",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:5,tts:10.08,s0:"2026-05-11",s1:"2026-05-11",s2:"2026-05-11",s3:"2026-05-11",s4:"2026-05-12",s5:"2026-05-11",s6:"2026-05-19",s7:"2026-05-19",s8:"2026-05-20",s9:"2026-05-20",s10:"2026-05-17",s11:"2026-05-21"},
+  {id:"5daf50a7",name:"Timekia Thompson",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:36,tts:12.08,s0:"2026-04-08",s1:"2026-04-08",s2:"2026-04-09",s3:"2026-04-09",s4:"2026-04-14",s5:"2026-04-10",s6:"2026-04-13",s7:"2026-04-17",s8:"2026-04-19",s9:"2026-04-19",s10:null,s11:"2026-04-20"},
+  {id:"ced842cc",name:"Tiana Taylor",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:21,tts:20.88,s0:"2026-04-14",s1:"2026-04-14",s2:"2026-04-14",s3:"2026-04-14",s4:"2026-04-15",s5:"2026-04-18",s6:"2026-04-22",s7:"2026-04-26",s8:null,s9:"2026-05-01",s10:"2026-04-20",s11:"2026-05-05"},
+  {id:"a46a12ea",name:"Ashley Garvey",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:15,tts:14.54,s0:"2026-04-27",s1:"2026-04-27",s2:"2026-04-29",s3:"2026-04-29",s4:"2026-05-04",s5:"2026-05-01",s6:"2026-05-04",s7:"2026-05-07",s8:null,s9:"2026-05-08",s10:"2026-05-08",s11:"2026-05-11"},
+  {id:"50292270",name:"Heather Sievers",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:36,tts:17.04,s0:"2026-04-03",s1:"2026-04-03",s2:"2026-04-07",s3:"2026-04-07",s4:"2026-04-09",s5:"2026-04-13",s6:"2026-04-16",s7:"2026-04-17",s8:"2026-04-17",s9:"2026-04-20",s10:"2026-04-15",s11:"2026-04-20"},
+  {id:"462bb218",name:"Keyia Stinson",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:18,tts:11.71,s0:"2026-04-27",s1:"2026-04-27",s2:"2026-04-27",s3:"2026-04-27",s4:"2026-04-29",s5:"2026-04-27",s6:"2026-04-29",s7:"2026-05-04",s8:null,s9:"2026-05-05",s10:null,s11:"2026-05-08"},
+  {id:"f295a97d",name:"Tashala Ivery",rec:"Ricky Corbett",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:29,tts:12.96,s0:"2026-04-14",s1:"2026-04-14",s2:"2026-04-14",s3:"2026-04-14",s4:"2026-04-15",s5:"2026-04-17",s6:"2026-04-20",s7:"2026-04-21",s8:"2026-04-25",s9:"2026-04-26",s10:"2026-04-19",s11:"2026-04-27"},
+  {id:"27ce9043",name:"Kaitlin Hanson",rec:"Taylor Springer",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:28,tts:1.38,s0:"2026-04-27",s1:"2026-04-27",s2:"2026-04-27",s3:"2026-04-27",s4:"2026-04-28",s5:"2026-04-27",s6:"2026-04-28",s7:"2026-04-28",s8:null,s9:"2026-04-28",s10:"2026-05-22",s11:"2026-04-28"},
+  {id:"910c75e0",name:"Ashley Comberger",rec:"Taylor Springer",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:4,tts:11.21,s0:"2026-05-11",s1:"2026-05-11",s2:"2026-05-11",s3:"2026-05-11",s4:"2026-05-12",s5:"2026-05-11",s6:"2026-05-18",s7:"2026-05-18",s8:"2026-05-18",s9:"2026-05-22",s10:"2026-05-21",s11:"2026-05-22"},
+  {id:"e17f6a4d",name:"Amy Siller",rec:"Taylor Springer",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:13,tts:9.38,s0:"2026-05-04",s1:"2026-05-04",s2:"2026-05-05",s3:"2026-05-05",s4:"2026-05-07",s5:"2026-05-06",s6:"2026-05-12",s7:"2026-05-13",s8:"2026-05-15",s9:"2026-05-13",s10:null,s11:"2026-05-13"},
+  {id:"ccf2ed93",name:"Keisha Reed",rec:"Taylor Springer",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:5,tts:9.88,s0:"2026-05-11",s1:"2026-05-11",s2:"2026-05-13",s3:"2026-05-13",s4:"2026-05-14",s5:"2026-05-13",s6:"2026-05-19",s7:"2026-05-19",s8:"2026-05-20",s9:"2026-05-21",s10:"2026-05-15",s11:"2026-05-21"},
+  {id:"1ce8dbfe",name:"Jesse Kowalewski",rec:"Taylor Springer",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:4,tts:11.13,s0:"2026-05-11",s1:"2026-05-11",s2:"2026-05-12",s3:"2026-05-12",s4:"2026-05-20",s5:"2026-05-13",s6:"2026-05-19",s7:"2026-05-21",s8:"2026-05-22",s9:"2026-05-22",s10:null,s11:"2026-05-22"},
+  {id:"96a85a79",name:"Eslobanka Loaiza",rec:"Taylor Springer",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:6,tts:9.21,s0:"2026-05-11",s1:"2026-05-11",s2:"2026-05-13",s3:"2026-05-13",s4:"2026-05-14",s5:"2026-05-13",s6:"2026-05-19",s7:"2026-05-20",s8:null,s9:"2026-05-20",s10:"2026-05-16",s11:"2026-05-20"},
+  {id:"a76487c4",name:"Jill Taylor",rec:"Taylor Springer",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:14,tts:8.38,s0:"2026-05-04",s1:"2026-05-05",s2:"2026-05-06",s3:"2026-05-06",s4:"2026-05-12",s5:"2026-05-08",s6:"2026-05-12",s7:"2026-05-12",s8:null,s9:"2026-05-12",s10:"2026-05-09",s11:"2026-05-12"},
+  {id:"c5b35555",name:"Martika Frazier",rec:"Taylor Springer",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:6,tts:15.5,s0:"2026-05-04",s1:"2026-05-04",s2:"2026-05-05",s3:"2026-05-05",s4:"2026-05-06",s5:"2026-05-07",s6:"2026-05-13",s7:"2026-05-19",s8:"2026-05-19",s9:"2026-05-19",s10:"2026-05-09",s11:"2026-05-20"},
+  {id:"e3e88c5d",name:"Yolanda Felts",rec:"Taylor Springer",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:6,tts:16.13,s0:"2026-05-04",s1:"2026-05-04",s2:"2026-05-06",s3:"2026-05-06",s4:"2026-05-09",s5:"2026-05-08",s6:"2026-05-14",s7:"2026-05-16",s8:"2026-05-16",s9:"2026-05-17",s10:"2026-05-15",s11:"2026-05-20"},
+  {id:"f15cd476",name:"Brandi Stephens",rec:"Taylor Springer",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:6,tts:9.04,s0:"2026-05-11",s1:"2026-05-11",s2:"2026-05-11",s3:"2026-05-11",s4:"2026-05-14",s5:"2026-05-13",s6:"2026-05-19",s7:"2026-05-20",s8:null,s9:"2026-05-20",s10:"2026-05-15",s11:"2026-05-20"},
+  {id:"9011320b",name:"Holly Kerbs",rec:"Taylor Springer",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:13,tts:9.29,s0:"2026-05-04",s1:"2026-05-04",s2:"2026-05-05",s3:"2026-05-05",s4:"2026-05-06",s5:"2026-05-06",s6:"2026-05-11",s7:"2026-05-13",s8:"2026-05-13",s9:"2026-05-13",s10:"2026-05-09",s11:"2026-05-13"},
+  {id:"ab6d95ff",name:"Melissa Longano Gonzalez",rec:"Taylor Springer",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:15,tts:14.38,s0:"2026-04-27",s1:"2026-04-27",s2:"2026-04-27",s3:"2026-04-27",s4:"2026-04-30",s5:"2026-04-28",s6:"2026-04-29",s7:"2026-05-01",s8:"2026-05-11",s9:"2026-05-11",s10:"2026-05-04",s11:"2026-05-11"},
+  {id:"50a3c9ef",name:"Davionne Wilkins",rec:"Taylor Springer",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:14,tts:15.13,s0:"2026-04-27",s1:"2026-04-27",s2:"2026-04-27",s3:"2026-04-27",s4:"2026-04-30",s5:"2026-04-29",s6:"2026-05-04",s7:"2026-05-06",s8:"2026-05-07",s9:"2026-05-10",s10:null,s11:"2026-05-12"},
+  {id:"6ca1ac9e",name:"Lacey Roberts",rec:"Taylor Springer",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:15,tts:7.38,s0:"2026-05-04",s1:"2026-05-04",s2:"2026-05-05",s3:"2026-05-05",s4:"2026-05-07",s5:"2026-05-06",s6:"2026-05-07",s7:"2026-05-08",s8:"2026-05-10",s9:"2026-05-10",s10:"2026-05-10",s11:"2026-05-11"},
+  {id:"35540cc3",name:"Jennifer Richmeier",rec:"Taylor Springer",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:7,tts:8,s0:"2026-05-11",s1:"2026-05-11",s2:"2026-05-11",s3:"2026-05-11",s4:"2026-05-13",s5:"2026-05-11",s6:"2026-05-14",s7:"2026-05-18",s8:"2026-05-18",s9:"2026-05-18",s10:"2026-05-13",s11:"2026-05-19"},
+  {id:"f9845015",name:"Marcy Creasman",rec:"Taylor Springer",status:"active",phase:"RECEIVED_FIRST_PATIENT",ds:8,tts:13.96,s0:"2026-05-04",s1:"2026-05-05",s2:"2026-05-05",s3:"2026-05-05",s4:"2026-05-07",s5:"2026-05-06",s6:"2026-05-11",s7:"2026-05-15",s8:null,s9:"2026-05-18",s10:"2026-05-10",s11:"2026-05-18"},
+];
+
+const RECS = [
+  {name:"Patricia Turner",  color:"#6366f1",init:"PT"},
+  {name:"Dalida Akhmedova", color:"#0ea5e9",init:"DA"},
+  {name:"Emily Patton",     color:"#10b981",init:"EP"},
+  {name:"Emma Spears",      color:"#f59e0b",init:"ES"},
+  {name:"Ricky Corbett",    color:"#ef4444",init:"RC"},
+  {name:"Taylor Springer",  color:"#8b5cf6",init:"TS"},
+];
+
+const SK = ['s0','s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s11'];
+const SL = ['Offer','DocuSign','BG Check','G.Admin','2SV','Registered','Attended','Quiz','Modules','Activated','Compliance','1st Patient'];
+const SF = ['Offer Sent','DocuSign Completed','Background Check Cleared','Google Admin Created','Google 2SV Enrolled','Registered for Onboarding','Attended Onboarding','Quiz Completed','Modules Completed','Activated for Patients','Compliance Completed','Received First Patient'];
+const PM = {OFFER_SENT:'Offer Sent',DOCUSIGN_COMPLETED:'DocuSign',BACKGROUND_CHECK_CLEARED:'BG Check',GOOGLE_ADMIN_USER_CREATED:'Google Admin',GOOGLE_2SV_ENROLLED:'Google 2SV',REGISTERED_FOR_ONBOARDING:'Registered',ATTENDED_ONBOARDING:'Attended',QUIZ_COMPLETED:'Quiz',COMPLETED_IN_PLATFORM_MODULES:'Modules',ACTIVATED_FOR_PATIENTS:'Activated',COMPLIANCE_COMPLETED:'Compliance',RECEIVED_FIRST_PATIENT:'First Patient \u2713'};
+const SC = {active:{c:'#10b981',bg:'#d1fae5',l:'Active'},onboarding:{c:'#f59e0b',bg:'#fef3c7',l:'Onboarding'},deactivated:{c:'#ef4444',bg:'#fee2e2',l:'Deactivated'}};
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let curRec = null, curFilter = 'all', curSort = 'name';
+const expanded = new Set();
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+function db(d1,d2){return d1&&d2?Math.round((new Date(d2)-new Date(d1))/86400000):null;}
+
+function pipHTML(c){
+  const v=SK.map(k=>c[k]); let h='';
+  for(let i=0;i<12;i++){
+    if(i>0) h+=`<span class="pip-line ${v[i-1]?'done':'not'}"></span>`;
+    let cls,inn='',ti=SF[i],delta='';
+    if(v[i]){for(let j=i-1;j>=0;j--){if(v[j]){const d=db(v[j],v[i]);delta=d!=null?` (+${d}d)`:'';break;}}ti+=`: ${v[i]}${delta}`;}
+    if(v[i]){cls='complete';inn='✓';}
+    else{const af=v.slice(i+1).some(Boolean);if(af){cls='skipped';}else{const bf=i===0?true:v.slice(0,i).some(Boolean);cls=bf?'current':'pending';if(cls==='current')inn='●';}}
+    h+=`<span class="pip-dot ${cls}" title="${ti}">${inn}</span>`;
+  }return h;
+}
+
+function stageCardsHTML(c){
+  const v=SK.map(k=>c[k]); let h='';
+  for(let i=0;i<12;i++){
+    const val=v[i]; let delta='';
+    if(val){for(let j=i-1;j>=0;j--){if(v[j]){const d=db(v[j],val);delta=d!=null?`+${d}d`:'';break;}}}
+    const af=v.slice(i+1).some(Boolean);
+    const bf=i===0?true:v.slice(0,i).some(Boolean);
+    let bc='#e2e8f0',dc='#94a3b8';
+    if(val){bc='#10b981';dc='#10b981';}else if(af){bc='#94a3b8';}else if(bf){bc='#f59e0b';}
+    const op=(!val&&!af&&!bf)?'0.4':'1';
+    h+=`<div class="stage-card" style="border-color:${bc};opacity:${op}">
+      <div class="sc-lbl">${SL[i]}</div>
+      <div class="sc-date" style="color:${dc}">${val?val.replace('2026-',''):'—'}</div>
+      ${delta?`<div class="sc-delta">${delta} from prev</div>`:''}
+    </div>`;
+  }return h;
+}
+
+// ── LOGIN ─────────────────────────────────────────────────────────────────────
+function buildLogin(){
+  const grid = document.getElementById('recruiter-grid');
+  grid.innerHTML = RECS.map(r=>{
+    const mine = ALL.filter(c=>c.rec===r.name);
+    const act = mine.filter(c=>c.status==='active').length;
+    const onb = mine.filter(c=>c.status==='onboarding').length;
+    const gr  = mine.filter(c=>c.s11).length;
+    return `<div class="rec-card" onclick="openDash('${r.name}')"
+      onmouseover="this.style.borderColor='${r.color}';this.style.background='${r.color}22';this.style.transform='translateY(-3px)';this.style.boxShadow='0 12px 32px rgba(0,0,0,.4)'"
+      onmouseout="this.style.borderColor='rgba(255,255,255,.1)';this.style.background='rgba(255,255,255,.05)';this.style.transform='none';this.style.boxShadow='none'">
+      <div class="rec-card-top">
+        <div class="rec-avatar" style="background:${r.color}">${r.init}</div>
+        <div>
+          <div class="rec-name">${r.name}</div>
+          <div class="rec-count">${mine.length} candidates</div>
+        </div>
+      </div>
+      <div class="rec-badges">
+        <span class="rec-badge" style="background:rgba(16,185,129,.15);color:#10b981">${act} Active</span>
+        <span class="rec-badge" style="background:rgba(245,158,11,.15);color:#f59e0b">${onb} Onboarding</span>
+        <span class="rec-badge" style="background:rgba(99,102,241,.15);color:#818cf8">${gr} Graduated</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── OPEN DASHBOARD ────────────────────────────────────────────────────────────
+function openDash(name){
+  curRec = name;
+  curFilter = 'all';
+  curSort = 'name';
+  expanded.clear();
+  const r = RECS.find(x=>x.name===name);
+  const accent = r.color;
+  document.documentElement.style.setProperty('--accent', accent);
+
+  document.getElementById('dash-dot').style.background = accent;
+  document.getElementById('dash-name').textContent = name;
+  document.getElementById('accent-bar').style.background = accent;
+
+  const mine = ALL.filter(c=>c.rec===name);
+  const act = mine.filter(c=>c.status==='active').length;
+  const onb = mine.filter(c=>c.status==='onboarding').length;
+  const dea = mine.filter(c=>c.status==='deactivated').length;
+  const gr  = mine.filter(c=>c.s11).length;
+  const tv  = mine.filter(c=>c.tts).map(c=>c.tts);
+  const avg = tv.length?(tv.reduce((a,b)=>a+b,0)/tv.length).toFixed(1):'—';
+
+  document.getElementById('dash-kpis').innerHTML = [
+    {l:'Total',v:mine.length,c:'#94a3b8'},
+    {l:'Active',v:act,c:'#10b981'},
+    {l:'Onboarding',v:onb,c:'#f59e0b'},
+    {l:'Got 1st Patient',v:gr,c:accent},
+    {l:'Avg Days to Start',v:avg,c:'#0ea5e9'},
+  ].map(s=>`<div class="kpi"><div class="kpi-v" style="color:${s.c}">${s.v}</div><div class="kpi-l">${s.l}</div></div>`).join('');
+
+  // Filter buttons
+  const fbg = document.getElementById('fbtn-group');
+  fbg.innerHTML = ['all','active','onboarding','deactivated'].map(s=>{
+    const cols={all:accent,active:'#10b981',onboarding:'#f59e0b',deactivated:'#ef4444'};
+    const lbl=s==='all'?'All':s[0].toUpperCase()+s.slice(1);
+    return `<button class="fbtn" id="fb-${s}" onclick="setFilter('${s}')">${lbl}</button>`;
+  }).join('');
+
+  document.getElementById('search-input').value='';
+  setFilter('all',false);
+  setSort('name',false);
+  applyFilters();
+
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('dashboard-screen').style.display='block';
+  window.scrollTo(0,0);
+}
+
+function showLogin(){
+  document.getElementById('dashboard-screen').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+}
+
+// ── FILTERS & SORT ────────────────────────────────────────────────────────────
+function setFilter(s, render=true){
+  curFilter=s;
+  ['all','active','onboarding','deactivated'].forEach(x=>{
+    const btn=document.getElementById('fb-'+x); if(!btn)return;
+    const cols={all:'--accent',active:'#10b981',onboarding:'#f59e0b',deactivated:'#ef4444'};
+    const c = x==='all' ? getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() : cols[x];
+    if(x===s){btn.style.borderColor=c;btn.style.background=c+'22';btn.style.color=c;}
+    else{btn.style.borderColor='#e2e8f0';btn.style.background='#fff';btn.style.color='#64748b';}
+  });
+  if(render) applyFilters();
+}
+
+function setSort(s, render=true){
+  curSort=s;
+  ['name','days','tts'].forEach(x=>{
+    const btn=document.getElementById('sort-'+x); if(!btn)return;
+    const accent=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+    if(x===s){btn.style.borderColor=accent;btn.style.background=accent+'22';btn.style.color=accent;}
+    else{btn.style.borderColor='#e2e8f0';btn.style.background='#fff';btn.style.color='#64748b';}
+  });
+  if(render) applyFilters();
+}
+
+function applyFilters(){
+  if(!curRec) return;
+  const q = document.getElementById('search-input').value.toLowerCase();
+  let data = ALL.filter(c=>{
+    if(c.rec!==curRec) return false;
+    if(curFilter!=='all' && c.status!==curFilter) return false;
+    if(q && !c.name.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  if(curSort==='name') data.sort((a,b)=>a.name.localeCompare(b.name));
+  else if(curSort==='days') data.sort((a,b)=>(b.ds||0)-(a.ds||0));
+  else data.sort((a,b)=>(a.tts||999)-(b.tts||999));
+
+  const act=data.filter(c=>c.status==='active').length;
+  const onb=data.filter(c=>c.status==='onboarding').length;
+  const dea=data.filter(c=>c.status==='deactivated').length;
+  const gr=data.filter(c=>c.s11).length;
+  const tv=data.filter(c=>c.tts).map(c=>c.tts);
+  const avg=tv.length?(tv.reduce((a,b)=>a+b,0)/tv.length).toFixed(1):'—';
+  const accent=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+
+  document.getElementById('stats-row').innerHTML=`
+    <div class="stat" style="border-color:#10b981"><div class="stat-v" style="color:#10b981">${act}</div><div class="stat-l">Active</div></div>
+    <div class="stat" style="border-color:#f59e0b"><div class="stat-v" style="color:#f59e0b">${onb}</div><div class="stat-l">Onboarding</div></div>
+    <div class="stat" style="border-color:#ef4444"><div class="stat-v" style="color:#ef4444">${dea}</div><div class="stat-l">Deactivated</div></div>
+    <div class="stat" style="border-color:#6366f1"><div class="stat-v" style="color:#6366f1">${gr}</div><div class="stat-l">Got 1st Patient</div></div>
+    <div class="stat" style="border-color:#0ea5e9"><div class="stat-v" style="color:#0ea5e9">${avg}</div><div class="stat-l">Avg Days to Start</div></div>`;
+
+  document.getElementById('legend-hint').textContent=`${data.length} candidates · Click row to expand · ↗ opens Ashby`;
+
+  const tbody=document.getElementById('table-body');
+  if(!data.length){tbody.innerHTML='<tr class="empty-row"><td colspan="6">No candidates match your filters</td></tr>';return;}
+  tbody.innerHTML=data.map(c=>{
+    const s=SC[c.status]||SC.active;
+    const ph=PM[c.phase]||c.phase;
+    const dc=c.ds>14?'#ef4444':c.ds>7?'#f59e0b':'#10b981';
+    const url=`https://app.ashbyhq.com/people?search=${encodeURIComponent(c.name)}`;
+    const isX=expanded.has(c.id);
+    let rows=`<tr class="crow${isX?' xopen':''}" onclick="toggleRow('${c.id}')">
+      <td><div class="name-cell">
+        <span class="expand-arrow">${isX?'▲':'▼'}</span>
+        <a class="cname" href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:var(--navy2)">${c.name}<span class="aicon" style="color:${accent}">↗</span></a>
+      </div></td>
+      <td><span class="badge" style="background:${s.bg};color:${s.c}">${s.l}</span></td>
+      <td><span class="phase-lbl">${ph}</span></td>
+      <td><div class="pip">${pipHTML(c)}</div></td>
+      <td style="text-align:center"><span class="days-v" style="color:${dc}">${c.ds!=null?c.ds+'d':'—'}</span></td>
+      <td style="text-align:center"><span class="tts-v">${c.tts!=null?c.tts+'d':'—'}</span></td>
+    </tr>`;
+    if(isX){rows+=`<tr class="xrow"><td colspan="6">
+      <div class="stage-cards">${stageCardsHTML(c)}</div>
+      <div class="xrow-footer"><a class="ashby-btn" href="${url}" target="_blank" rel="noopener" style="background:${accent}">Open in Ashby ↗</a></div>
+    </td></tr>`;}
+    return rows;
+  }).join('');
+}
+
+function toggleRow(id){
+  if(expanded.has(id))expanded.delete(id);else expanded.add(id);
+  applyFilters();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+buildLogin();
+</script>
+</body>
+</html>
